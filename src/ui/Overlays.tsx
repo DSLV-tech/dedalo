@@ -42,6 +42,20 @@ const InstallAction = memo(function InstallAction(): JSX.Element | null {
   return null;
 });
 
+/** Link discreti a privacy/termini/crediti: pagine statiche, non fanno parte della SPA. */
+const LegalLinks = memo(function LegalLinks(): JSX.Element {
+  const base = import.meta.env.BASE_URL;
+  return (
+    <p className={styles.legal}>
+      <a href={`${base}privacy.html`}>Privacy</a>
+      <span aria-hidden="true"> · </span>
+      <a href={`${base}termini.html`}>Termini</a>
+      <span aria-hidden="true"> · </span>
+      <a href={`${base}crediti.html`}>Crediti</a>
+    </p>
+  );
+});
+
 interface TitleProps {
   readonly seed: number;
   readonly record: RunRecord;
@@ -78,6 +92,7 @@ export const TitleOverlay = memo(function TitleOverlay({ seed, record, onStart, 
         </div>
         <InstallAction />
         <p className={styles.footnote}>Invio per iniziare · ? per la leggenda</p>
+        <LegalLinks />
       </div>
     </div>
   );
@@ -233,7 +248,40 @@ interface HelpProps {
   readonly onClose: () => void;
   readonly settings: AudioSettings;
   readonly onSettings: (patch: Partial<AudioSettings>) => void;
+  /** Presente solo a spedizione in corso: chiude il pannello e riporta al titolo. */
+  readonly onQuit?: (() => void) | undefined;
 }
+
+/**
+ * "Abbandona la spedizione" è distruttivo (perde la run in corso), quindi
+ * serve una doppia conferma: un tocco arma il pulsante, il secondo esegue.
+ * Si disarma da solo dopo qualche secondo per evitare tocchi accidentali tardivi.
+ */
+const QuitAction = memo(function QuitAction({ onQuit }: { readonly onQuit: () => void }): JSX.Element {
+  const [armed, setArmed] = useState(false);
+
+  useEffect(() => {
+    if (!armed) return undefined;
+    const timer = window.setTimeout(() => setArmed(false), 4000);
+    return () => window.clearTimeout(timer);
+  }, [armed]);
+
+  return (
+    <button
+      type="button"
+      className={armed ? styles.dangerArmed : styles.danger}
+      onClick={() => {
+        if (armed) {
+          onQuit();
+        } else {
+          setArmed(true);
+        }
+      }}
+    >
+      {armed ? 'Sei sicuro? Tocca di nuovo per confermare' : 'Abbandona la spedizione'}
+    </button>
+  );
+});
 
 const LEGEND: ReadonlyArray<{ readonly color: string; readonly name: string; readonly text: string }> = [
   { color: ACTOR_COLOR.player, name: 'Tu', text: 'Unità di recupero. Muoverti addosso a un nemico è un attacco.' },
@@ -252,7 +300,7 @@ const LEGEND: ReadonlyArray<{ readonly color: string; readonly name: string; rea
   { color: PALETTE.exit, name: 'Varco', text: 'Anello dorato: scende di un piano e offre un innesto. Al piano 12 è il Nucleo.' },
 ];
 
-export const HelpOverlay = memo(function HelpOverlay({ onClose, settings, onSettings }: HelpProps): JSX.Element {
+export const HelpOverlay = memo(function HelpOverlay({ onClose, settings, onSettings, onQuit }: HelpProps): JSX.Element {
   return (
     <div className={styles.backdrop} onClick={onClose} role="presentation">
       <div className={styles.panelWide} onClick={(event) => event.stopPropagation()} role="dialog" aria-label="Comandi e leggenda">
@@ -285,9 +333,16 @@ export const HelpOverlay = memo(function HelpOverlay({ onClose, settings, onSett
             </li>
           ))}
         </ul>
+        {onQuit && (
+          <>
+            <h3 className={styles.subtitle}>Spedizione</h3>
+            <QuitAction onQuit={onQuit} />
+          </>
+        )}
         <button type="button" className={styles.ghost} onClick={onClose}>
           Chiudi
         </button>
+        <LegalLinks />
       </div>
     </div>
   );

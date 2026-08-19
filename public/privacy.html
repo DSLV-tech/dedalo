@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Privacy — DEDALO</title>
+<meta name="description" content="Informativa privacy di DEDALO: quali dati vengono salvati, dove restano e come cancellarli." />
+<meta name="robots" content="noindex" />
+<style>
+  :root {
+    --c-bg: #04060d;
+    --c-text: #dff7ff;
+    --c-accent: #31f5ff;
+    --c-danger: #ff3d68;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+  body {
+    margin: 0;
+    color: var(--c-text);
+    background:
+      radial-gradient(circle at 20% 0%, rgba(49, 245, 255, 0.07), transparent 55%),
+      radial-gradient(circle at 85% 100%, rgba(255, 61, 104, 0.06), transparent 50%),
+      var(--c-bg);
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    line-height: 1.6;
+  }
+  main {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 2.5rem 1.4rem 4rem;
+  }
+  a { color: var(--c-accent); }
+  .kicker {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+    opacity: 0.85;
+  }
+  h1 {
+    margin: 0 0 0.3rem;
+    font-size: 1.6rem;
+    letter-spacing: 0.02em;
+  }
+  .updated {
+    margin: 0 0 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    opacity: 0.55;
+  }
+  h2 {
+    margin: 2rem 0 0.6rem;
+    font-size: 1.05rem;
+    color: var(--c-accent);
+  }
+  p, li { font-size: 0.95rem; opacity: 0.92; }
+  ul { padding-left: 1.2rem; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: rgba(49, 245, 255, 0.1);
+    padding: 0.1em 0.4em;
+    border-radius: 3px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0.6rem 0;
+    font-size: 0.85rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--c-accent) 20%, transparent);
+    vertical-align: top;
+  }
+  th { color: var(--c-accent); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  nav.crumbs {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid color-mix(in srgb, var(--c-accent) 22%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">Documento legale</p>
+  <h1>Privacy</h1>
+  <p class="updated">Aggiornato al 19 agosto 2026</p>
+
+  <p>
+    DEDALO è un gioco interamente statico: non ha un server, non ha un account, e non invia
+    nessuna informazione a nessuno mentre giochi. Tutto quello che il gioco salva resta sul
+    tuo dispositivo, dentro il tuo browser.
+  </p>
+
+  <h2>Cosa viene salvato</h2>
+  <p>Il gioco usa il <code>localStorage</code> del browser per ricordare due cose, solo in locale:</p>
+  <table>
+    <tr><th>Chiave</th><th>Contenuto</th></tr>
+    <tr><td><code>dedalo.record.v1</code></td><td>Profondità massima raggiunta, frammenti migliori, numero di run giocate — il tuo record personale.</td></tr>
+    <tr><td><code>dedalo.audio.v1</code></td><td>Le tue preferenze audio e aptiche (volume, silenziamento, vibrazione attiva/disattiva).</td></tr>
+  </table>
+  <p>Nessuna di queste informazioni identifica te come persona: sono solo numeri di gioco.</p>
+
+  <h2>Cosa NON viene raccolto</h2>
+  <ul>
+    <li>Nessun dato personale (nome, email, posizione, dispositivo).</li>
+    <li>Nessun cookie di tracciamento.</li>
+    <li>Nessun servizio di analytics o statistiche di terze parti.</li>
+    <li>Nessuna pubblicità.</li>
+    <li>Nessuna comunicazione con un server: dopo il primo caricamento il gioco funziona anche offline.</li>
+  </ul>
+
+  <h2>Modalità offline e Service Worker</h2>
+  <p>
+    Se installi DEDALO sulla schermata Home, un service worker salva in cache i file del gioco
+    (immagini, audio, codice) per farlo funzionare senza connessione. Anche questa cache resta
+    solo sul tuo dispositivo e non trasmette nulla altrove.
+  </p>
+
+  <h2>Come cancellare i tuoi dati</h2>
+  <p>
+    Basta cancellare i dati del sito dalle impostazioni del browser (su Chrome Android:
+    Impostazioni → Privacy → Cancella dati di navigazione, oppure tieni premuta l'icona del sito
+    e scegli "Informazioni sull'app" → Spazio di archiviazione → Cancella dati), oppure
+    disinstallare l'app se l'hai aggiunta alla Home. Il record e le preferenze audio ripartono
+    da zero.
+  </p>
+
+  <h2>Contatti</h2>
+  <p>Per domande su questa informativa: <a href="mailto:dslvcrstn@gmail.com">dslvcrstn@gmail.com</a></p>
+
+  <nav class="crumbs">
+    <a href="./">← Torna al gioco</a>
+    <a href="./termini.html">Termini d'uso</a>
+    <a href="./crediti.html">Crediti e licenze</a>
+  </nav>
+</main>
+</body>
+</html>

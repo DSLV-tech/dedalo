@@ -61,6 +61,11 @@ export default function App(): JSX.Element {
   );
   const handleWait = useCallback(() => dispatch({ type: 'wait' }), [dispatch]);
   const handlePulse = useCallback(() => dispatch({ type: 'pulse' }), [dispatch]);
+  const handleQuit = useCallback(() => {
+    click();
+    dispatch({ type: 'toTitle' });
+    toggleHelp();
+  }, [click, dispatch, toggleHelp]);
   const togglePhase = useCallback(() => setPhaseArmed((armed) => !armed), []);
   const togglePanel = useCallback(() => setPanelOpen((open) => !open), []);
 
@@ -125,7 +130,14 @@ export default function App(): JSX.Element {
           {(state.phase === 'dead' || state.phase === 'won') && (
             <EndOverlay state={state} record={record} onRestart={handleRestart} />
           )}
-          {helpOpen && <HelpOverlay onClose={toggleHelp} settings={settings} onSettings={setSettings} />}
+          {helpOpen && (
+            <HelpOverlay
+              onClose={toggleHelp}
+              settings={settings}
+              onSettings={setSettings}
+              onQuit={playing ? handleQuit : undefined}
+            />
+          )}
         </div>
       </div>
     </div>
