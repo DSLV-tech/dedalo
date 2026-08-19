@@ -1,0 +1,39 @@
+.wrap {
+  display: grid;
+  place-content: center;
+  gap: 1rem;
+  min-height: 100dvh;
+  padding: 2rem;
+  text-align: center;
+  color: var(--c-text);
+  background: var(--c-bg);
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  letter-spacing: 0.14em;
+  color: var(--c-danger);
+  text-shadow: 0 0 18px color-mix(in srgb, var(--c-danger) 60%, transparent);
+}
+
+.message {
+  margin: 0;
+  max-width: 46ch;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.button {
+  justify-self: center;
+  padding: 0.7rem 1.4rem;
+  font: inherit;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-bg);
+  background: var(--c-accent);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+}
