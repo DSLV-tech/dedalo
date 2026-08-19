@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { MAX_DEPTH, PHASE_COST, PULSE_COST } from '../engine/content';
+import { Wordmark } from './Wordmark';
 import type { GameState } from '../engine/types';
 import styles from './Hud.module.css';
 
@@ -45,7 +46,9 @@ function HudImpl({ state, onHelp, muted, onToggleMute }: Props): JSX.Element {
   return (
     <header className={styles.hud}>
       <div className={styles.identity}>
-        <span className={styles.brand}>DEDALO</span>
+        <span className={styles.brand}>
+          <Wordmark />
+        </span>
         <span className={styles.depth}>
           Profondità <strong>{state.depth}</strong>
           <span className={styles.dim}>/{MAX_DEPTH}</span>

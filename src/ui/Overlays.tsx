@@ -14,6 +14,7 @@ import type { RunRecord } from '../game/storage';
 import type { AudioSettings } from '../audio/engine';
 import { SettingsPanel } from './SettingsPanel';
 import { TitleBackdrop } from './TitleBackdrop';
+import { Wordmark } from './Wordmark';
 import styles from './Overlays.module.css';
 
 interface TitleProps {
@@ -29,7 +30,9 @@ export const TitleOverlay = memo(function TitleOverlay({ seed, record, onStart, 
       <TitleBackdrop />
       <div className={styles.panel}>
         <p className={styles.kicker}>{PROLOGUE.kicker}</p>
-        <h1 className={styles.title}>{PROLOGUE.title}</h1>
+        <h1 className={styles.logo}>
+          <Wordmark title={PROLOGUE.title} />
+        </h1>
         <p className={styles.lede}>{PROLOGUE.text}</p>
         <p className={styles.objective}>
           <span className={styles.objectiveLabel}>Obiettivo</span>

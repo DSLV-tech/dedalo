@@ -1,0 +1,9 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: var(--c-accent);
+  filter:
+    drop-shadow(0 0 6px color-mix(in srgb, var(--c-accent) 70%, transparent))
+    drop-shadow(0 0 22px color-mix(in srgb, var(--c-accent) 45%, transparent));
+}

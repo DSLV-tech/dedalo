@@ -55,6 +55,11 @@
   text-transform: uppercase;
 }
 
+.logo {
+  margin: 0.2rem auto 0.4rem;
+  width: min(100%, 380px);
+}
+
 .titleSmall {
   margin: 0;
   font-size: clamp(1rem, 3vw, 1.35rem);

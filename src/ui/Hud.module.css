@@ -15,11 +15,8 @@
 }
 
 .brand {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: 0.4em;
-  color: var(--c-accent);
-  text-shadow: 0 0 16px color-mix(in srgb, var(--c-accent) 55%, transparent);
+  display: block;
+  width: 116px;
 }
 
 .depth {
@@ -175,8 +172,7 @@
   }
 
   .brand {
-    font-size: 0.9rem;
-    letter-spacing: 0.28em;
+    width: 92px;
   }
 
   .stats {
