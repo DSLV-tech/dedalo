@@ -20,3 +20,9 @@
   width: 100%;
   height: 118px;
 }
+
+@container device (orientation: landscape) {
+  .canvas {
+    height: 96px;
+  }
+}

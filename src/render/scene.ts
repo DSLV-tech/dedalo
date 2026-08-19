@@ -12,7 +12,9 @@ export interface Camera {
 }
 
 const MIN_TILE = 14;
-const MAX_TILE = 34;
+const MAX_TILE = 58;
+/** Sotto questa soglia di colonne visibili il labirinto diventa illeggibile. */
+const MIN_COLUMNS = 8;
 const MOVE_MS = 130;
 const FX_MS = 460;
 const NUMBER_MS = 900;
@@ -22,20 +24,23 @@ const NUMBER_MS = 900;
  * i tasselli scendono sotto i 16px e il labirinto diventa illeggibile su telefono.
  */
 function targetCells(width: number): { readonly columns: number; readonly rows: number } {
-  if (width < 480) return { columns: 13, rows: 11 };
-  if (width < 900) return { columns: 17, rows: 13 };
-  return { columns: 21, rows: 14 };
+  if (width < 480) return { columns: 11, rows: 15 };
+  return { columns: 15, rows: 13 };
 }
 
 export function computeCamera(state: GameState, width: number, height: number, focus: Vec): Camera {
   const target = targetCells(width);
-  const tile = Math.max(
-    MIN_TILE,
-    Math.min(MAX_TILE, Math.floor(Math.min(width / target.columns, height / target.rows))),
-  );
+  const { level } = state;
+
+  const base = Math.min(width / target.columns, height / target.rows);
+  // Sui piani alti il labirinto è più corto dello schermo: invece di lasciare
+  // due fasce nere, ingrandiamo i tasselli finché il piano riempie l'altezza —
+  // senza mai scendere sotto un minimo di colonne visibili.
+  const fill = Math.min(height / Math.max(1, level.height), width / MIN_COLUMNS);
+  const tile = Math.max(MIN_TILE, Math.min(MAX_TILE, Math.floor(Math.max(base, fill))));
+
   const columns = width / tile;
   const rows = height / tile;
-  const { level } = state;
 
   const clamp = (value: number, span: number, total: number): number => {
     if (total <= span) return (total - span) / 2;

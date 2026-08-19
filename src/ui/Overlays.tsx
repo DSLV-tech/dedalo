@@ -15,7 +15,32 @@ import type { AudioSettings } from '../audio/engine';
 import { SettingsPanel } from './SettingsPanel';
 import { TitleBackdrop } from './TitleBackdrop';
 import { Wordmark } from './Wordmark';
+import { useInstall } from '../pwa';
 import styles from './Overlays.module.css';
+
+/**
+ * Pulsante di installazione. Su Android compare quando Chrome segnala che il
+ * sito è installabile; su iOS il dialogo non esiste, quindi mostriamo la via
+ * manuale invece di far finta che si possa fare in un tocco.
+ */
+const InstallAction = memo(function InstallAction(): JSX.Element | null {
+  const { available, manualIos, install } = useInstall();
+  if (available) {
+    return (
+      <button type="button" className={styles.install} onClick={install}>
+        Installa sul telefono
+      </button>
+    );
+  }
+  if (manualIos) {
+    return (
+      <p className={styles.installHint}>
+        Per installarlo: <strong>Condividi</strong> → <strong>Aggiungi a Home</strong>
+      </p>
+    );
+  }
+  return null;
+});
 
 interface TitleProps {
   readonly seed: number;
@@ -51,6 +76,7 @@ export const TitleOverlay = memo(function TitleOverlay({ seed, record, onStart, 
             Comandi
           </button>
         </div>
+        <InstallAction />
         <p className={styles.footnote}>Invio per iniziare · ? per la leggenda</p>
       </div>
     </div>
@@ -246,6 +272,7 @@ export const HelpOverlay = memo(function HelpOverlay({ onClose, settings, onSett
         </p>
         <h3 className={styles.subtitle}>Audio e feedback</h3>
         <SettingsPanel settings={settings} onChange={onSettings} />
+        <InstallAction />
         <h3 className={styles.subtitle}>Obiettivo</h3>
         <p className={styles.storyText}>{PROLOGUE.objective}</p>
         <h3 className={styles.subtitle}>Leggenda</h3>

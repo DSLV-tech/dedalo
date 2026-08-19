@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { MAX_DEPTH, PHASE_COST, PULSE_COST } from '../engine/content';
-import { Wordmark } from './Wordmark';
+import { MAX_DEPTH } from '../engine/content';
 import type { GameState } from '../engine/types';
+import { Wordmark } from './Wordmark';
 import styles from './Hud.module.css';
 
 interface Props {
@@ -42,17 +42,33 @@ function Bar({ label, value, max, tone }: BarProps): JSX.Element {
   );
 }
 
+/**
+ * Barra di stato compatta: una sola versione, pensata per lo schermo del
+ * telefono. Le abilità non sono più elencate qui — sono i tasti in basso.
+ */
 function HudImpl({ state, onHelp, muted, onToggleMute }: Props): JSX.Element {
   return (
     <header className={styles.hud}>
-      <div className={styles.identity}>
+      <div className={styles.top}>
         <span className={styles.brand}>
           <Wordmark />
         </span>
         <span className={styles.depth}>
-          Profondità <strong>{state.depth}</strong>
+          Prof. <strong>{state.depth}</strong>
           <span className={styles.dim}>/{MAX_DEPTH}</span>
         </span>
+        <button
+          type="button"
+          className={styles.icon}
+          onClick={onToggleMute}
+          aria-label={muted ? 'Riattiva l’audio' : 'Silenzia l’audio'}
+          aria-pressed={muted}
+        >
+          {muted ? '🔇' : '🔊'}
+        </button>
+        <button type="button" className={styles.icon} onClick={onHelp} aria-label="Comandi e leggenda">
+          ?
+        </button>
       </div>
 
       <div className={styles.bars}>
@@ -78,27 +94,6 @@ function HudImpl({ state, onHelp, muted, onToggleMute }: Props): JSX.Element {
           <dd>{state.turn}</dd>
         </div>
       </dl>
-
-      <div className={styles.abilities}>
-        <span className={state.energy >= PULSE_COST ? styles.ready : styles.locked}>
-          Impulso <em>E</em> · {PULSE_COST}
-        </span>
-        <span className={state.energy >= PHASE_COST ? styles.ready : styles.locked}>
-          Transizione <em>⇧+dir</em> · {PHASE_COST}
-        </span>
-        <button
-          type="button"
-          className={styles.help}
-          onClick={onToggleMute}
-          aria-label={muted ? 'Riattiva l’audio' : 'Silenzia l’audio'}
-          aria-pressed={muted}
-        >
-          {muted ? '🔇' : '🔊'}
-        </button>
-        <button type="button" className={styles.help} onClick={onHelp} aria-label="Comandi e leggenda">
-          ?
-        </button>
-      </div>
     </header>
   );
 }

@@ -138,6 +138,40 @@
 .primary:hover,
 .ghost:hover { transform: translateY(-1px); }
 
+.install {
+  justify-self: center;
+  padding: 0.7rem 1.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--c-accent);
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--c-accent) 55%, transparent);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.install:hover,
+.install:focus-visible {
+  background: color-mix(in srgb, var(--c-accent) 14%, transparent);
+}
+
+.installHint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.installHint strong {
+  color: var(--c-accent);
+  font-weight: 500;
+}
+
 .footnote {
   margin: 0;
   font-family: var(--font-mono);
@@ -318,7 +352,7 @@
   transform: translateY(1px);
 }
 
-@media (max-width: 560px) {
+@container device (max-width: 560px) {
   .score { grid-template-columns: repeat(2, 1fr); }
   .keys li, .legend li { grid-template-columns: 1fr; gap: 0.15rem; }
 }

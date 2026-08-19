@@ -230,8 +230,13 @@ export async function loadSpriteAtlas(): Promise<SpriteAtlas> {
   return {
     ready: true,
     get(id, size) {
+      // La dimensione richiesta è in pixel CSS, ma il canvas disegna in pixel
+      // fisici: su un telefono a dpr 3, rasterizzare a misura CSS significa
+      // ingrandire poi di 3× un bitmap piccolo — cioè sfocatura.
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
       const bucket = Math.max(8, Math.round(size / 4) * 4);
-      const cacheKey = `${id}:${bucket}`;
+      const pixels = Math.ceil(bucket * dpr);
+      const cacheKey = `${id}:${bucket}:${dpr}`;
       const cached = cache.get(cacheKey);
       if (cached) return cached;
 
@@ -239,11 +244,13 @@ export async function loadSpriteAtlas(): Promise<SpriteAtlas> {
       if (!image) return null;
 
       const canvas = document.createElement('canvas');
-      canvas.width = bucket;
-      canvas.height = bucket;
+      canvas.width = pixels;
+      canvas.height = pixels;
       const context = canvas.getContext('2d');
       if (!context) return null;
-      context.drawImage(image, 0, 0, bucket, bucket);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      context.drawImage(image, 0, 0, pixels, pixels);
       cache.set(cacheKey, canvas);
       return canvas;
     },

@@ -36,5 +36,12 @@
   ],
   "categories": [
     "games"
-  ]
+  ],
+  "id": "./",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "lang": "it",
+  "dir": "ltr"
 }

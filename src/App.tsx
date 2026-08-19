@@ -10,6 +10,13 @@ import { EndOverlay, FinaleOverlay, HelpOverlay, TitleOverlay, UpgradeOverlay } 
 import type { Direction, EndingId, UpgradeId } from './engine/types';
 import styles from './App.module.css';
 
+/**
+ * DEDALO è un gioco da telefono. Tutto vive dentro `.device`, un riquadro con
+ * proporzioni da smartphone: sul telefono riempie lo schermo, su desktop diventa
+ * una cornice centrata. Il layout interno reagisce alle dimensioni di quel
+ * riquadro (container query), non a quelle della finestra — così la versione
+ * incorniciata e quella reale si comportano in modo identico.
+ */
 export default function App(): JSX.Element {
   const { state, record, helpOpen, dispatch, move, phaseDash, toggleHelp } = useGame();
   const { settings, setSettings, toggleMute, click } = useAudio(state);
@@ -18,7 +25,7 @@ export default function App(): JSX.Element {
 
   // Su touch la transizione si "arma" prima di scegliere la direzione:
   // niente tasti modificatori disponibili.
-  const handleTouchMove = useCallback(
+  const handleMove = useCallback(
     (dir: Direction) => {
       if (phaseArmed) {
         phaseDash(dir);
@@ -65,54 +72,62 @@ export default function App(): JSX.Element {
     return () => window.removeEventListener('keydown', onKey);
   }, [toggleMute]);
 
-  const swipe = state.phase === 'playing' ? handleTouchMove : undefined;
+  // Chiude il pannello quando si apre una schermata a tutto campo.
+  useEffect(() => {
+    if (state.phase !== 'playing') setPanelOpen(false);
+  }, [state.phase]);
+
+  const playing = state.phase === 'playing';
 
   return (
-    <div className={styles.shell}>
-      <Hud state={state} onHelp={toggleHelp} muted={settings.muted} onToggleMute={toggleMute} />
+    <div className={styles.page}>
+      <div className={styles.device}>
+        <div className={styles.shell}>
+          {playing && (
+            <Hud state={state} onHelp={toggleHelp} muted={settings.muted} onToggleMute={toggleMute} />
+          )}
 
-      <main className={styles.stage}>
-        <GameCanvas state={state} onSwipe={swipe} />
-        <aside className={panelOpen ? styles.sideOpen : styles.side}>
-          <Minimap state={state} />
-          <LogPanel log={state.log} />
-        </aside>
+          <main className={styles.stage}>
+            <GameCanvas state={state} onSwipe={playing ? handleMove : undefined} />
+            {panelOpen && (
+              <aside className={styles.sheet}>
+                <Minimap state={state} />
+                <LogPanel log={state.log} />
+              </aside>
+            )}
+          </main>
 
-        {state.phase === 'title' && (
-          <TitleOverlay seed={state.seed} record={record} onStart={handleStart} onHelp={toggleHelp} />
-        )}
-        {state.phase === 'upgrade' && (
-          <UpgradeOverlay
-            choices={state.upgradeChoices}
-            depth={state.depth}
-            records={state.records}
-            onChoose={handleUpgrade}
-          />
-        )}
-        {state.phase === 'finale' && <FinaleOverlay records={state.records} onChoose={handleEnding} />}
-        {(state.phase === 'dead' || state.phase === 'won') && (
-          <EndOverlay state={state} record={record} onRestart={handleRestart} />
-        )}
-        {helpOpen && <HelpOverlay onClose={toggleHelp} settings={settings} onSettings={setSettings} />}
-      </main>
+          {playing && (
+            <TouchControls
+              onMove={handleMove}
+              onWait={handleWait}
+              onPulse={handlePulse}
+              phaseArmed={phaseArmed}
+              onTogglePhase={togglePhase}
+              panelOpen={panelOpen}
+              onTogglePanel={togglePanel}
+              energy={state.energy}
+            />
+          )}
 
-      <TouchControls
-        onMove={handleTouchMove}
-        onPhase={phaseDash}
-        onWait={handleWait}
-        onPulse={handlePulse}
-        phaseArmed={phaseArmed}
-        onTogglePhase={togglePhase}
-        panelOpen={panelOpen}
-        onTogglePanel={togglePanel}
-      />
-
-      <footer className={styles.footer}>
-        <span>DEDALO · seed {state.seed}</span>
-        <span>
-          Sviluppo <a href="https://dslv.tech" target="_blank" rel="noreferrer">DSLV.tech</a>
-        </span>
-      </footer>
+          {state.phase === 'title' && (
+            <TitleOverlay seed={state.seed} record={record} onStart={handleStart} onHelp={toggleHelp} />
+          )}
+          {state.phase === 'upgrade' && (
+            <UpgradeOverlay
+              choices={state.upgradeChoices}
+              depth={state.depth}
+              records={state.records}
+              onChoose={handleUpgrade}
+            />
+          )}
+          {state.phase === 'finale' && <FinaleOverlay records={state.records} onChoose={handleEnding} />}
+          {(state.phase === 'dead' || state.phase === 'won') && (
+            <EndOverlay state={state} record={record} onRestart={handleRestart} />
+          )}
+          {helpOpen && <HelpOverlay onClose={toggleHelp} settings={settings} onSettings={setSettings} />}
+        </div>
+      </div>
     </div>
   );
 }

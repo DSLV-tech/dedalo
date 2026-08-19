@@ -3,8 +3,8 @@
 Roguelike procedurale a labirinto. Dodici piani generati da zero a ogni discesa,
 estetica neon-arcade su nero, turni a griglia senza riflessi richiesti.
 
-React 18 + TypeScript strict + Vite. Nessuna dipendenza runtime oltre React.
-Sprite vettoriali, colonna sonora originale, installabile offline.
+**Gioco da telefono.** React 18 + TypeScript strict + Vite, nessuna dipendenza runtime
+oltre React. Sprite vettoriali, colonna sonora originale, installabile offline.
 
 ---
 
@@ -156,11 +156,42 @@ mancano resta lo sfondo procedurale. Dettagli in [`public/art/README.md`](./publ
 
 ## Mobile
 
-- **Trascina sul labirinto** per muoverti, oppure usa il D-pad.
-- Pianta e registro stanno in un pannello a scomparsa: il labirinto si prende lo schermo.
-- Vibrazione su colpi, danni e discese (disattivabile).
-- **Installabile**: `public/sw.js` mette in cache l'app e l'audio, quindi dopo il primo
-  avvio DEDALO funziona anche senza rete. Richiede HTTPS (o `localhost`).
+DEDALO è progettato per un telefono, non adattato a uno. Tutta l'interfaccia vive dentro
+`.device`, un riquadro con proporzioni da smartphone:
+
+- su telefono **è** lo schermo, a tutta pagina;
+- su desktop diventa una **cornice verticale centrata**, così si può provare dal computer
+  senza fingere che sia un gioco da tastiera.
+
+Il layout interno reagisce alle dimensioni di quel riquadro tramite **container query**, non
+alla finestra del browser: la versione incorniciata e quella reale si comportano in modo
+identico, il che rende il debug da desktop attendibile.
+
+**Comandi** — trascina sul labirinto, oppure usa il D-pad (tasti da 56px, nella zona del
+pollice). Il tasto *Transizione* si arma: premilo, poi scegli la direzione. La tastiera resta
+attiva come scorciatoia per lo sviluppo.
+
+**Orientamento** — funziona in verticale e in orizzontale. In verticale i comandi stanno sotto
+il labirinto e la pianta sale dal basso; in orizzontale i comandi galleggiano in una striscia
+in basso a sinistra e la pianta diventa un pannello laterale.
+
+**Nitidezza** — gli sprite vengono rasterizzati alla densità reale dello schermo
+(`devicePixelRatio`), non alla misura in pixel CSS: su un telefono a dpr 3 la differenza fra
+nitido e sfocato è tutta lì.
+
+**Installabile** — `public/sw.js` mette in cache app e audio: dopo il primo avvio funziona
+anche senza rete. Richiede HTTPS (o `localhost`).
+
+Su Android il pulsante **Installa sul telefono** compare nella schermata titolo e nel pannello
+`?` quando Chrome segnala che il sito è installabile: catturiamo `beforeinstallprompt` in
+`src/pwa.ts` prima che React monti, altrimenti l'evento si perde e il pulsante non apparirebbe
+mai. Su iOS quel dialogo non esiste, quindi mostriamo la procedura manuale
+(*Condividi → Aggiungi a Home*).
+
+Perché il prompt compaia servono **tutte** queste condizioni: HTTPS, `manifest.webmanifest`
+raggiungibile dalla radice pubblicata, icone PNG 192 e 512, `display: standalone`, e un service
+worker registrato con un handler `fetch`. Se il sito è pubblicato dal sorgente invece che da
+`dist/`, manifest e service worker rispondono 404 e Android non proporrà mai l'installazione.
 
 ---
 

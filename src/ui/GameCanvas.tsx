@@ -56,6 +56,8 @@ function GameCanvasImpl({ state, onSwipe }: Props): JSX.Element {
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
     };
 
     const observer = new ResizeObserver(resize);
