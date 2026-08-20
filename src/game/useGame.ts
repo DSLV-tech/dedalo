@@ -4,6 +4,7 @@ import { seedFromString } from '../engine/rng';
 import type { Direction, GameAction, GameState } from '../engine/types';
 import { loadRecord, mergeRecord, saveRecord } from './storage';
 import type { RunRecord } from './storage';
+import { loadRun, saveRun, withResumeNotice } from './persist';
 
 const KEY_TO_DIRECTION: Readonly<Record<string, Direction>> = {
   ArrowUp: 'up',
@@ -42,12 +43,26 @@ function initialSeed(): number {
 }
 
 /**
+ * Se c'è una spedizione interrotta la si riprende da dov'era, tranne quando
+ * l'URL chiede esplicitamente un seed: in quel caso l'intenzione è giocare
+ * *quella* run, non riprendere la precedente.
+ */
+function initialState(): GameState {
+  const requestedSeed = new URLSearchParams(window.location.search).get('seed');
+  if (requestedSeed === null || requestedSeed.trim() === '') {
+    const saved = loadRun();
+    if (saved) return withResumeNotice(saved);
+  }
+  return createTitleState(initialSeed());
+}
+
+/**
  * Il gioco vive in un solo albero di stato prodotto da un riduttore puro,
  * quindi `useReducer` basta e avanza: niente store esterno, niente sincronizzazione.
  * L'unico stato di UI separato è l'apertura dell'aiuto.
  */
 export function useGame(): GameApi {
-  const [state, rawDispatch] = useReducer(reduce, undefined, () => createTitleState(initialSeed()));
+  const [state, rawDispatch] = useReducer(reduce, undefined, initialState);
   const [record, setRecord] = useState<RunRecord>(() => loadRecord());
   const [helpOpen, setHelpOpen] = useState(false);
   const scored = useRef<number | null>(null);
@@ -59,6 +74,13 @@ export function useGame(): GameApi {
   const move = useCallback((dir: Direction) => dispatch({ type: 'move', dir }), [dispatch]);
   const phaseDash = useCallback((dir: Direction) => dispatch({ type: 'phase', dir }), [dispatch]);
   const toggleHelp = useCallback(() => setHelpOpen((open) => !open), []);
+
+  // La spedizione in corso viene riscritta a ogni turno; a run conclusa
+  // `saveRun` cancella da sé il salvataggio, così non si riprende una partita
+  // già finita.
+  useEffect(() => {
+    saveRun(state);
+  }, [state]);
 
   // Registra il risultato una sola volta per run conclusa.
   useEffect(() => {

@@ -88,7 +88,7 @@ src/
     lore.ts         tutti i testi: prologo, intermezzi, registri, epiloghi
     level.ts        assemblaggio del piano (uscita, caveau, loot, spawn)
     game.ts         riduttore puro: unico punto in cui lo stato cambia
-  game/       ponte React: useGame (useReducer + tastiera), persistenza record
+  game/       ponte React: useGame (useReducer + tastiera), record e ripresa della run
   render/     disegno su canvas 2D
     palette.ts      colori, un ruolo per tono
     sprites.ts      sprite SVG e cache di rasterizzazione
@@ -178,6 +178,14 @@ in basso a sinistra e la pianta diventa un pannello laterale.
 **Nitidezza** — gli sprite vengono rasterizzati alla densità reale dello schermo
 (`devicePixelRatio`), non alla misura in pixel CSS: su un telefono a dpr 3 la differenza fra
 nitido e sfocato è tutta lì.
+
+**Ripresa della partita** — su un telefono una run da dodici piani non sopravvive a una
+telefonata o a un cambio di app. Siccome `GameState` è un unico oggetto immutabile e
+serializzabile, `src/game/persist.ts` lo scrive su `localStorage` a ogni turno e lo rilegge
+all'avvio: riapri il gioco e sei dov'eri. Le uniche parti non serializzabili sono le mappe
+`Uint8Array` del piano, codificate in base64. Il salvataggio si cancella da sé quando la run
+finisce o viene abbandonata, e viene ignorato se l'URL chiede un `?seed=` esplicito. Gli
+effetti visivi (`fx`) non vengono ripescati: sono roba dell'ultimo fotogramma.
 
 **Installabile** — `public/sw.js` mette in cache app e audio: dopo il primo avvio funziona
 anche senza rete. Richiede HTTPS (o `localhost`).
